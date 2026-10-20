@@ -9,22 +9,22 @@ export default {
     extend: {
       colors: {
         studio: {
-          950: '#0a0a0c',
-          900: '#121216',
-          850: '#17171d',
-          800: '#1e1e26',
-          700: '#2a2a36',
-          600: '#3c3c4d',
+          950: '#07080a',
+          900: '#0f1115',
+          850: '#14171d',
+          800: '#1c1f26',
+          700: '#272b35',
+          600: '#3a404d',
         },
-        cinematic: {
-          amber: '#f59e0b',
-          tungsten: '#ff9933',
-          daylight: '#60a5fa',
-          neon: '#06b6d4',
+        aqua: {
+          400: '#38bdf8',
+          500: '#0ea5e9',
+          600: '#0284c7',
         }
       },
       fontFamily: {
-        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+        sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', 'Segoe UI', 'Roboto', 'sans-serif'],
+        mono: ['"JetBrains Mono"', '"SF Mono"', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
       }
     },
   },

@@ -1,71 +1,122 @@
 import React from 'react'
-import { Maximize2, Sun, HelpCircle, RotateCcw } from 'lucide-react'
+import {
+  Sun,
+  Maximize2,
+  Minimize2,
+  Moon,
+  HelpCircle,
+  RotateCcw,
+  Pin,
+  PinOff,
+} from 'lucide-react'
+import type { SoftboxSettings } from '../types/softbox'
 
 interface HeaderProps {
-  onActivateFullscreen: () => void
+  settings: SoftboxSettings
+  isBlackout: boolean
+  isFullscreen: boolean
+  isPinned: boolean
+  onToggleBlackout: () => void
+  onToggleFullscreen: () => void
+  onTogglePinned: () => void
   onReset: () => void
   onOpenHelp: () => void
 }
 
 export const Header: React.FC<HeaderProps> = ({
-  onActivateFullscreen,
+  settings,
+  isBlackout,
+  isFullscreen,
+  isPinned,
+  onToggleBlackout,
+  onToggleFullscreen,
+  onTogglePinned,
   onReset,
   onOpenHelp,
 }) => {
   return (
-    <header className="border-b border-neutral-800/80 bg-neutral-900/90 backdrop-blur sticky top-0 z-30 px-4 sm:px-6 py-3.5">
-      <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-        {/* Brand / Logo */}
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-500/20 via-neutral-800 to-sky-500/20 border border-neutral-700/60 flex items-center justify-center shadow-inner">
-            <Sun className="w-5 h-5 text-amber-400 animate-pulse" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-bold tracking-wider text-base sm:text-lg text-white font-mono">
-                MONITOR<span className="text-amber-400">SOFTBOX</span>
-              </span>
-              <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-neutral-800 text-neutral-400 border border-neutral-700 font-semibold tracking-widest hidden sm:inline-block">
-                STUDIO PRO
-              </span>
-            </div>
-            <p className="text-xs text-neutral-400 hidden sm:block">
-              Turn your display into a calibrated cinematography key & fill light
-            </p>
-          </div>
-        </div>
+    <header className="fixed top-3.5 inset-x-0 z-40 px-4 sm:px-6 pointer-events-none flex items-center justify-between gap-3">
+      {/* Brand & Live Telemetry Pill */}
+      <div className="pointer-events-auto pro-dock flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-xs">
+        <span className="font-semibold tracking-tight text-white/90">
+          MonitorSoftbox
+        </span>
+        <span className="text-white/20">•</span>
+        <span className="font-mono text-white/80">
+          {isBlackout ? 'MUTED' : settings.mode === 'cct' ? `${settings.kelvin}K` : `${settings.hue}°`}
+        </span>
+        <span className="text-white/20">•</span>
+        <span className="font-mono text-white/60">
+          {settings.brightness}%
+        </span>
+      </div>
 
-        {/* Action Buttons */}
-        <div className="flex items-center gap-2.5">
-          <button
-            onClick={onReset}
-            title="Reset to 5600K Daylight Default"
-            className="p-2.5 rounded-lg bg-neutral-800/80 hover:bg-neutral-800 text-neutral-400 hover:text-white border border-neutral-700/60 transition-all text-xs font-mono flex items-center gap-1.5 cursor-pointer"
-          >
-            <RotateCcw className="w-4 h-4" />
-            <span className="hidden md:inline">Reset</span>
-          </button>
+      {/* Right Controls Pill */}
+      <div className="pointer-events-auto pro-dock flex items-center gap-1 p-1 rounded-xl text-xs">
+        {/* Blackout / Standby button */}
+        <button
+          onClick={onToggleBlackout}
+          className={`px-2.5 py-1.5 rounded-lg font-medium flex items-center gap-1.5 transition-all cursor-pointer ${
+            isBlackout
+              ? 'bg-red-500/20 text-red-300 border border-red-500/40'
+              : 'text-white/70 hover:text-white hover:bg-white/5'
+          }`}
+          title="Toggle Blackout / Light Mute (Space)"
+        >
+          {isBlackout ? <Sun className="w-3.5 h-3.5 text-red-400" /> : <Moon className="w-3.5 h-3.5" />}
+          <span className="hidden sm:inline">{isBlackout ? 'Resume' : 'Mute'}</span>
+          <kbd className="hidden lg:inline-block px-1 py-0.2 text-[10px] bg-white/10 text-white/70 font-mono rounded">
+            Space
+          </kbd>
+        </button>
 
-          <button
-            onClick={onOpenHelp}
-            title="Shortcuts and Info"
-            className="p-2.5 rounded-lg bg-neutral-800/80 hover:bg-neutral-800 text-neutral-400 hover:text-white border border-neutral-700/60 transition-all text-xs font-mono flex items-center gap-1.5 cursor-pointer"
-          >
-            <HelpCircle className="w-4 h-4" />
-            <span className="hidden md:inline">Guide</span>
-          </button>
+        <div className="w-[1px] h-3.5 bg-white/10 mx-0.5" />
 
-          <button
-            onClick={onActivateFullscreen}
-            className="group relative inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-neutral-950 font-bold text-xs sm:text-sm tracking-wider uppercase font-mono shadow-[0_0_20px_rgba(245,158,11,0.35)] hover:shadow-[0_0_30px_rgba(245,158,11,0.6)] transition-all transform active:scale-95 cursor-pointer"
-          >
-            <Maximize2 className="w-4 h-4 stroke-[2.5]" />
-            <span>ACTIVATE SOFTBOX</span>
-            <kbd className="hidden lg:inline-block ml-1 px-1.5 py-0.5 text-[10px] bg-neutral-900/20 text-neutral-900 font-mono rounded">
-              F
-            </kbd>
-          </button>
-        </div>
+        {/* Pin HUD */}
+        <button
+          onClick={onTogglePinned}
+          className={`p-1.5 rounded-lg transition-all cursor-pointer ${
+            isPinned
+              ? 'text-white bg-white/15'
+              : 'text-white/60 hover:text-white hover:bg-white/5'
+          }`}
+          title={isPinned ? 'HUD Pinned (Always Visible)' : 'Auto-hide HUD on Inactivity (Press H)'}
+        >
+          {isPinned ? <Pin className="w-3.5 h-3.5" /> : <PinOff className="w-3.5 h-3.5" />}
+        </button>
+
+        {/* Help Modal */}
+        <button
+          onClick={onOpenHelp}
+          className="p-1.5 rounded-lg text-white/60 hover:text-white hover:bg-white/5 transition-all cursor-pointer"
+          title="Guide & Shortcuts"
+        >
+          <HelpCircle className="w-3.5 h-3.5" />
+        </button>
+
+        {/* Reset */}
+        <button
+          onClick={onReset}
+          className="p-1.5 rounded-lg text-white/60 hover:text-white hover:bg-white/5 transition-all cursor-pointer"
+          title="Reset to 5600K 100%"
+        >
+          <RotateCcw className="w-3.5 h-3.5" />
+        </button>
+
+        <div className="w-[1px] h-3.5 bg-white/10 mx-0.5" />
+
+        {/* Fullscreen Button */}
+        <button
+          onClick={onToggleFullscreen}
+          className="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-medium flex items-center gap-1.5 transition-all cursor-pointer"
+          title={isFullscreen ? 'Exit Fullscreen (Esc or F)' : 'Enter Fullscreen (F)'}
+        >
+          {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+          <span className="hidden sm:inline">{isFullscreen ? 'Exit' : 'Fullscreen'}</span>
+          <kbd className="hidden lg:inline-block px-1 py-0.2 text-[10px] bg-white/10 text-white/70 font-mono rounded">
+            F
+          </kbd>
+        </button>
       </div>
     </header>
   )

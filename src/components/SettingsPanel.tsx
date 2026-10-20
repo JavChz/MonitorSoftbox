@@ -1,144 +1,204 @@
-import React from 'react'
+import React, { useState } from 'react'
 import type { SoftboxSettings, AreaShape } from '../types/softbox'
-import { CCT_QUICK_PRESETS } from '../utils/presets'
-import { kelvinToRgb, rgbToHex } from '../utils/color'
+import { PresetSelector } from './PresetSelector'
+import type { LightingPreset } from '../types/softbox'
 import {
   Sun,
-  Thermometer,
-  Layers,
-  Circle,
-  Square,
-  Columns,
-  Palette,
-  Disc,
-  Split,
+  Sliders,
+  Maximize2,
+  Minimize2,
+  AlertTriangle,
 } from 'lucide-react'
 
 interface SettingsPanelProps {
   settings: SoftboxSettings
+  isFullscreen: boolean
+  onToggleFullscreen: () => void
   onChange: (updates: Partial<SoftboxSettings>) => void
+  onApplyPreset: (preset: LightingPreset) => void
 }
 
 export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   settings,
+  isFullscreen,
+  onToggleFullscreen,
   onChange,
+  onApplyPreset,
 }) => {
-  const currentRgb = kelvinToRgb(settings.kelvin, settings.tint)
-  const currentHex = rgbToHex(currentRgb)
+  const [showAdvancedShape, setShowAdvancedShape] = useState(false)
 
   const shapes: { id: AreaShape; label: string; icon: React.ReactNode }[] = [
-    { id: 'fullscreen', label: 'Full Panel', icon: <Square className="w-4 h-4 fill-current opacity-80" /> },
-    { id: 'octa', label: 'Octa Catchlight', icon: <Circle className="w-4 h-4" /> },
-    { id: 'box', label: 'Softbox Box', icon: <Square className="w-4 h-4" /> },
-    { id: 'stripleft', label: 'Left Strip', icon: <Columns className="w-4 h-4" /> },
-    { id: 'stripright', label: 'Right Strip', icon: <Columns className="w-4 h-4 transform scale-x-[-1]" /> },
-    { id: 'ring', label: 'Ring Light', icon: <Disc className="w-4 h-4" /> },
-    { id: 'bicolor', label: 'Dual Key/Fill', icon: <Split className="w-4 h-4" /> },
+    {
+      id: 'fullscreen',
+      label: 'Full',
+      icon: (
+        <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor">
+          <rect x="2" y="2" width="12" height="12" rx="1.5" />
+        </svg>
+      ),
+    },
+    {
+      id: 'octa',
+      label: 'Octa',
+      icon: (
+        <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor">
+          <circle cx="8" cy="8" r="6" />
+        </svg>
+      ),
+    },
+    {
+      id: 'box',
+      label: 'Box',
+      icon: (
+        <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor">
+          <rect x="3" y="3" width="10" height="10" rx="2" />
+        </svg>
+      ),
+    },
+    {
+      id: 'stripleft',
+      label: 'Left Strip',
+      icon: (
+        <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor">
+          <rect x="2" y="2" width="4.5" height="12" rx="1" />
+        </svg>
+      ),
+    },
+    {
+      id: 'stripright',
+      label: 'Right Strip',
+      icon: (
+        <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor">
+          <rect x="9.5" y="2" width="4.5" height="12" rx="1" />
+        </svg>
+      ),
+    },
+    {
+      id: 'ring',
+      label: 'Ring',
+      icon: (
+        <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <circle cx="8" cy="8" r="5" />
+        </svg>
+      ),
+    },
+    {
+      id: 'bicolor',
+      label: 'Bi-Color',
+      icon: (
+        <svg className="w-3.5 h-3.5" viewBox="0 0 16 16">
+          <path d="M2 3a1 1 0 0 1 1-1h5v12H3a1 1 0 0 1-1-1V3z" fill="#f59e0b" />
+          <path d="M8 2h5a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H8V2z" fill="#38bdf8" />
+        </svg>
+      ),
+    },
   ]
 
   return (
-    <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-4 sm:p-6 flex flex-col gap-6 shadow-xl">
-      {/* 1. LIGHT MODE SELECTOR */}
-      <div className="flex items-center justify-between border-b border-neutral-800 pb-4">
-        <div>
-          <span className="text-xs font-mono font-bold tracking-wider text-neutral-400 uppercase">
-            OPERATING MODE
-          </span>
-          <p className="text-xs text-neutral-500">Choose physical CCT or creative color gel</p>
-        </div>
-        <div className="flex bg-neutral-950 p-1 rounded-lg border border-neutral-800">
-          <button
-            onClick={() => onChange({ mode: 'cct' })}
-            className={`px-3 py-1.5 rounded-md text-xs font-mono font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
-              settings.mode === 'cct'
-                ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40 shadow-sm'
-                : 'text-neutral-400 hover:text-white'
-            }`}
-          >
-            <Thermometer className="w-3.5 h-3.5" />
-            <span>CCT (Kelvin)</span>
-          </button>
-          <button
-            onClick={() => onChange({ mode: 'hsi' })}
-            className={`px-3 py-1.5 rounded-md text-xs font-mono font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
-              settings.mode === 'hsi'
-                ? 'bg-purple-500/20 text-purple-400 border border-purple-500/40 shadow-sm'
-                : 'text-neutral-400 hover:text-white'
-            }`}
-          >
-            <Palette className="w-3.5 h-3.5" />
-            <span>HSI (Color Gel)</span>
-          </button>
-        </div>
-      </div>
+    <div className="pro-dock rounded-2xl p-4 sm:p-5 flex flex-col gap-3.5 shadow-2xl text-white select-none">
+      {/* 1. SCENE PRESETS SWATCH STRIP */}
+      <PresetSelector
+        currentKelvin={settings.kelvin}
+        currentMode={settings.mode}
+        currentShape={settings.shape}
+        onSelectPreset={onApplyPreset}
+      />
 
-      {/* 2. BRIGHTNESS CONTROL */}
-      <div className="flex flex-col gap-2.5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Sun className="w-4 h-4 text-amber-400" />
-            <label className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-300">
-              Brightness / Intensity
-            </label>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-lg font-mono font-bold text-amber-400">
+      <div className="w-full h-[1px] bg-white/5" />
+
+      {/* 2. DUAL HARDWARE FADERS */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+        {/* Brightness Fader */}
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-center justify-between text-xs px-0.5">
+            <span className="font-medium text-white/60 flex items-center gap-1.5">
+              <Sun className="w-3.5 h-3.5 text-white/60" />
+              Intensity
+            </span>
+            <span className="font-mono font-medium text-white">
               {settings.brightness}%
             </span>
           </div>
+
+          <div className="relative w-full h-8 rounded-lg pro-well flex items-center px-2.5 overflow-hidden">
+            {/* Flat fill bar */}
+            <div
+              className="absolute left-0 top-0 bottom-0 bg-white/20 pointer-events-none transition-all duration-75"
+              style={{ width: `${settings.brightness}%` }}
+            />
+            <input
+              type="range"
+              min="1"
+              max="100"
+              value={settings.brightness}
+              onChange={(e) => onChange({ brightness: Number(e.target.value) })}
+              className="relative z-10 w-full cursor-pointer"
+            />
+          </div>
+
+          {/* Quick Brightness Buttons */}
+          <div className="flex items-center justify-between gap-1">
+            {[10, 25, 50, 75, 100].map((val) => (
+              <button
+                key={val}
+                onClick={() => onChange({ brightness: val })}
+                className={`flex-1 py-0.5 rounded text-[11px] font-mono transition-all cursor-pointer ${
+                  settings.brightness === val
+                    ? 'bg-white/20 text-white font-medium'
+                    : 'text-white/40 hover:text-white/80 hover:bg-white/5'
+                }`}
+              >
+                {val}%
+              </button>
+            ))}
+          </div>
         </div>
 
-        <input
-          type="range"
-          min="1"
-          max="100"
-          value={settings.brightness}
-          onChange={(e) => onChange({ brightness: Number(e.target.value) })}
-          className="w-full h-2.5 rounded-lg bg-neutral-800 accent-amber-400 cursor-pointer"
-        />
-
-        {/* Quick Brightness Presets */}
-        <div className="flex items-center justify-between gap-1.5 pt-1">
-          {[10, 25, 50, 75, 100].map((val) => (
-            <button
-              key={val}
-              onClick={() => onChange({ brightness: val })}
-              className={`flex-1 py-1 rounded text-xs font-mono border transition-all cursor-pointer ${
-                settings.brightness === val
-                  ? 'bg-amber-500/20 border-amber-500/50 text-amber-300 font-bold'
-                  : 'bg-neutral-950/60 hover:bg-neutral-800 border-neutral-800 text-neutral-400'
-              }`}
-            >
-              {val}%
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* 3. COLOR TEMPERATURE (CCT) OR HSI GEL */}
-      {settings.mode === 'cct' ? (
-        <div className="flex flex-col gap-4">
-          {/* Kelvin Slider */}
-          <div className="flex flex-col gap-2.5">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Thermometer className="w-4 h-4 text-sky-400" />
-                <label className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-300">
-                  White Balance (Color Temperature)
-                </label>
-              </div>
-              <div className="flex items-center gap-2 px-2.5 py-1 rounded bg-neutral-950 border border-neutral-800">
-                <span
-                  className="w-3 h-3 rounded-full border border-white/20"
-                  style={{ backgroundColor: currentHex }}
-                />
-                <span className="text-sm font-mono font-bold text-white">
-                  {settings.kelvin} K
-                </span>
+        {/* Color Temperature / Gel Spectrum Fader */}
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-center justify-between text-xs px-0.5">
+            <div className="flex items-center gap-1.5">
+              <div className="flex bg-black/40 p-0.5 rounded-md border border-white/5">
+                <button
+                  onClick={() => onChange({ mode: 'cct' })}
+                  className={`px-2 py-0.5 rounded text-[11px] font-medium transition-all cursor-pointer ${
+                    settings.mode === 'cct'
+                      ? 'bg-white/20 text-white'
+                      : 'text-white/40 hover:text-white/80'
+                  }`}
+                >
+                  CCT Kelvin
+                </button>
+                <button
+                  onClick={() => onChange({ mode: 'hsi' })}
+                  className={`px-2 py-0.5 rounded text-[11px] font-medium transition-all cursor-pointer ${
+                    settings.mode === 'hsi'
+                      ? 'bg-white/20 text-white'
+                      : 'text-white/40 hover:text-white/80'
+                  }`}
+                >
+                  Color Gel
+                </button>
               </div>
             </div>
 
-            <div className="relative flex items-center">
+            <span className="font-mono font-medium text-white">
+              {settings.mode === 'cct' ? `${settings.kelvin}K` : `${settings.hue}°`}
+            </span>
+          </div>
+
+          <div className="relative w-full h-8 rounded-lg pro-well flex items-center px-2.5 overflow-hidden">
+            {/* Color spectrum track */}
+            <div
+              className="absolute inset-0 opacity-80 pointer-events-none rounded-lg"
+              style={{
+                background:
+                  settings.mode === 'cct'
+                    ? 'linear-gradient(to right, #ff8912 0%, #ffaa55 25%, #ffffff 50%, #cce2ff 75%, #8cbfff 100%)'
+                    : 'linear-gradient(to right, #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%)',
+              }}
+            />
+            {settings.mode === 'cct' ? (
               <input
                 type="range"
                 min="1800"
@@ -146,253 +206,235 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 step="50"
                 value={settings.kelvin}
                 onChange={(e) => onChange({ kelvin: Number(e.target.value) })}
-                className="w-full h-3 rounded-lg cursor-pointer"
-                style={{
-                  background:
-                    'linear-gradient(to right, #ff8912 0%, #ffaa55 25%, #ffffff 50%, #cce2ff 75%, #8cbfff 100%)',
-                }}
+                className="relative z-10 w-full cursor-pointer"
               />
-            </div>
-
-            {/* Quick Kelvin Presets */}
-            <div className="flex flex-wrap gap-1.5 pt-1">
-              {CCT_QUICK_PRESETS.map((preset) => {
-                const isActive = Math.abs(settings.kelvin - preset.kelvin) < 50
-                return (
-                  <button
-                    key={preset.kelvin}
-                    onClick={() => onChange({ kelvin: preset.kelvin })}
-                    className={`px-2.5 py-1 rounded text-xs font-mono border transition-all flex items-center gap-1.5 cursor-pointer ${
-                      isActive
-                        ? 'bg-sky-500/20 border-sky-500/60 text-sky-200 font-bold'
-                        : 'bg-neutral-950/60 hover:bg-neutral-800 border-neutral-800 text-neutral-400'
-                    }`}
-                  >
-                    <span>{preset.label}</span>
-                    <span className="text-[10px] opacity-70">({preset.kelvin}K)</span>
-                  </button>
-                )
-              })}
-            </div>
+            ) : (
+              <input
+                type="range"
+                min="0"
+                max="360"
+                value={settings.hue}
+                onChange={(e) => onChange({ hue: Number(e.target.value) })}
+                className="relative z-10 w-full cursor-pointer"
+              />
+            )}
           </div>
 
-          {/* Green / Magenta Tint Shift */}
-          <div className="flex flex-col gap-1.5 pt-1">
-            <div className="flex items-center justify-between text-xs font-mono">
-              <span className="text-neutral-400 uppercase tracking-wider font-semibold">
-                Green / Magenta Tint (duv)
-              </span>
-              <div className="flex items-center gap-2">
-                <span className={settings.tint > 0 ? 'text-emerald-400 font-bold' : settings.tint < 0 ? 'text-pink-400 font-bold' : 'text-neutral-400'}>
-                  {settings.tint > 0 ? `+${settings.tint} (Green)` : settings.tint < 0 ? `${settings.tint} (Magenta)` : '0 (Neutral)'}
-                </span>
-                {settings.tint !== 0 && (
-                  <button
-                    onClick={() => onChange({ tint: 0 })}
-                    className="text-[10px] text-neutral-500 hover:text-white underline cursor-pointer"
-                  >
-                    Reset
-                  </button>
-                )}
-              </div>
+          {/* Quick Kelvin Pills / Saturation */}
+          {settings.mode === 'cct' ? (
+            <div className="flex items-center justify-between gap-1">
+              {[2700, 3200, 4300, 5600, 6500].map((k) => (
+                <button
+                  key={k}
+                  onClick={() => onChange({ kelvin: k })}
+                  className={`flex-1 py-0.5 rounded text-[11px] font-mono transition-all cursor-pointer ${
+                    Math.abs(settings.kelvin - k) < 50
+                      ? 'bg-white/20 text-white font-medium'
+                      : 'text-white/40 hover:text-white/80 hover:bg-white/5'
+                  }`}
+                >
+                  {k}K
+                </button>
+              ))}
             </div>
-
-            <input
-              type="range"
-              min="-50"
-              max="50"
-              value={settings.tint}
-              onChange={(e) => onChange({ tint: Number(e.target.value) })}
-              className="w-full h-2 rounded-lg cursor-pointer"
-              style={{
-                background: 'linear-gradient(to right, #ec4899 0%, #737373 50%, #10b981 100%)',
-              }}
-            />
-          </div>
-        </div>
-      ) : (
-        /* HSI COLOR GEL MODE */
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between text-xs font-mono">
-              <span className="text-neutral-300 uppercase tracking-wider font-bold">
-                Color Gel Hue
-              </span>
-              <span className="text-purple-400 font-bold">{settings.hue}°</span>
+          ) : (
+            <div className="flex items-center justify-between text-xs px-0.5 gap-2">
+              <span className="text-white/50 text-[11px]">Saturation</span>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={settings.saturation}
+                onChange={(e) => onChange({ saturation: Number(e.target.value) })}
+                className="flex-1 h-1.5 rounded-full bg-white/10 accent-white cursor-pointer"
+              />
+              <span className="font-mono text-xs text-white/80">{settings.saturation}%</span>
             </div>
-            <input
-              type="range"
-              min="0"
-              max="360"
-              value={settings.hue}
-              onChange={(e) => onChange({ hue: Number(e.target.value) })}
-              className="w-full h-3 rounded-lg cursor-pointer"
-              style={{
-                background:
-                  'linear-gradient(to right, #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%)',
-              }}
-            />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between text-xs font-mono">
-              <span className="text-neutral-300 uppercase tracking-wider font-bold">
-                Saturation
-              </span>
-              <span className="text-purple-400 font-bold">{settings.saturation}%</span>
-            </div>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={settings.saturation}
-              onChange={(e) => onChange({ saturation: Number(e.target.value) })}
-              className="w-full h-2.5 rounded-lg bg-neutral-800 accent-purple-400 cursor-pointer"
-            />
-          </div>
-        </div>
-      )}
-
-      {/* 4. AREA / SHAPE SELECTOR */}
-      <div className="flex flex-col gap-3 border-t border-neutral-800 pt-5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Layers className="w-4 h-4 text-emerald-400" />
-            <label className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-300">
-              Softbox Area & Shape
-            </label>
-          </div>
-          <span className="text-xs font-mono text-neutral-400 uppercase">
-            {settings.shape}
-          </span>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          {shapes.map((item) => {
-            const isSelected = settings.shape === item.id
-            return (
-              <button
-                key={item.id}
-                onClick={() => onChange({ shape: item.id })}
-                className={`p-2.5 rounded-lg border text-xs font-mono flex items-center gap-2 transition-all cursor-pointer ${
-                  isSelected
-                    ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300 font-bold shadow-sm'
-                    : 'bg-neutral-950/70 hover:bg-neutral-800 border-neutral-800 text-neutral-400'
-                }`}
-              >
-                {item.icon}
-                <span className="truncate">{item.label}</span>
-              </button>
-            )
-          })}
+          )}
         </div>
       </div>
 
-      {/* 5. DYNAMIC SHAPE CONTROLS */}
-      {settings.shape !== 'fullscreen' && (
-        <div className="bg-neutral-950/70 border border-neutral-800/80 rounded-lg p-3.5 flex flex-col gap-3.5">
-          <span className="text-[11px] font-mono text-neutral-400 uppercase font-bold tracking-wider">
-            Shape Dimensions & Position
-          </span>
+      {/* 3. APERTURE SHAPES, DIFFUSION & FULLSCREEN BUTTON */}
+      <div className="flex flex-col gap-2 pt-1">
+        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+          {/* Segmented Shape Selector */}
+          <div className="flex-1 min-w-[280px] flex items-center gap-1 p-1 rounded-xl pro-well overflow-x-auto no-scrollbar">
+            {shapes.map((item) => {
+              const isSelected = settings.shape === item.id
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => onChange({ shape: item.id })}
+                  className={`flex-1 py-2 px-2.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
+                    isSelected
+                      ? 'pro-pill-active'
+                      : 'text-white/50 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  {item.icon}
+                  <span className="hidden sm:inline">{item.label}</span>
+                </button>
+              )
+            })}
+          </div>
 
-          {/* BOX WIDTH / HEIGHT */}
-          {(settings.shape === 'box' || settings.shape === 'stripleft' || settings.shape === 'stripright') && (
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between text-xs font-mono">
-                <span className="text-neutral-400">Width</span>
-                <span className="text-neutral-200">{settings.boxWidth}%</span>
-              </div>
+          {/* Clean Flat Diffusion Control */}
+          <div className="w-full sm:w-52 h-10 px-3 rounded-xl pro-well flex items-center gap-2 shrink-0">
+            <span className="text-xs text-white/60 font-medium whitespace-nowrap">Diffusion</span>
+            <div className="flex-1 min-w-0 flex items-center">
               <input
                 type="range"
-                min="10"
-                max={settings.shape === 'box' ? '100' : '60'}
-                value={settings.boxWidth}
-                onChange={(e) => onChange({ boxWidth: Number(e.target.value) })}
-                className="w-full h-2 rounded bg-neutral-800 accent-emerald-400 cursor-pointer"
-              />
-            </div>
-          )}
-
-          {settings.shape === 'box' && (
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between text-xs font-mono">
-                <span className="text-neutral-400">Height</span>
-                <span className="text-neutral-200">{settings.boxHeight}%</span>
-              </div>
-              <input
-                type="range"
-                min="10"
+                min="0"
                 max="100"
-                value={settings.boxHeight}
-                onChange={(e) => onChange({ boxHeight: Number(e.target.value) })}
-                className="w-full h-2 rounded bg-neutral-800 accent-emerald-400 cursor-pointer"
+                value={settings.feather}
+                onChange={(e) => onChange({ feather: Number(e.target.value) })}
+                className="w-full h-1.5 rounded-full bg-white/20 accent-white cursor-pointer"
               />
             </div>
+            <span className="font-mono text-xs text-white/80 w-7 text-right shrink-0">
+              {settings.feather}%
+            </span>
+          </div>
+
+          {/* Toggle geometry options if not fullscreen */}
+          {settings.shape !== 'fullscreen' && (
+            <button
+              onClick={() => setShowAdvancedShape(!showAdvancedShape)}
+              className={`h-10 px-3 rounded-xl pro-well text-xs transition-colors cursor-pointer flex items-center justify-center shrink-0 ${
+                showAdvancedShape ? 'text-white bg-white/15' : 'text-white/60 hover:text-white'
+              }`}
+              title="Geometry & Dimensions"
+            >
+              <Sliders className="w-4 h-4" />
+            </button>
           )}
 
-          {/* OCTA OR RING DIAMETER */}
-          {(settings.shape === 'octa' || settings.shape === 'ring') && (
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between text-xs font-mono">
-                <span className="text-neutral-400">Diameter</span>
-                <span className="text-neutral-200">{settings.circleDiameter}%</span>
+          {/* Clean High-Contrast Fullscreen Button */}
+          <button
+            onClick={onToggleFullscreen}
+            className={`h-10 px-4 sm:px-5 rounded-xl font-medium text-xs flex items-center justify-center gap-2 shrink-0 transition-all cursor-pointer whitespace-nowrap ${
+              isFullscreen
+                ? 'bg-white/10 hover:bg-white/20 text-white border border-white/10'
+                : 'bg-white hover:bg-neutral-200 text-black shadow-md'
+            }`}
+            title={isFullscreen ? 'Exit Fullscreen (Esc or F)' : 'Enter Fullscreen (F)'}
+          >
+            {isFullscreen ? (
+              <>
+                <Minimize2 className="w-3.5 h-3.5" />
+                <span>Exit Fullscreen</span>
+              </>
+            ) : (
+              <>
+                <Maximize2 className="w-3.5 h-3.5" />
+                <span>Fullscreen</span>
+                <kbd className="hidden md:inline-block px-1.5 py-0.5 text-[10px] bg-black/10 text-black font-mono rounded">
+                  F
+                </kbd>
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* 4. EXPANDABLE GEOMETRY DRAWER */}
+        {settings.shape !== 'fullscreen' && showAdvancedShape && (
+          <div className="p-3 rounded-xl pro-well flex flex-wrap gap-4 text-xs animate-fadeIn">
+            {/* Box Width / Height */}
+            {(settings.shape === 'box' || settings.shape === 'stripleft' || settings.shape === 'stripright') && (
+              <div className="flex-1 min-w-[140px] flex flex-col gap-1">
+                <div className="flex justify-between text-white/70">
+                  <span>Width</span>
+                  <span className="font-mono text-white">{settings.boxWidth}%</span>
+                </div>
+                <input
+                  type="range"
+                  min="10"
+                  max={settings.shape === 'box' ? 100 : 60}
+                  value={settings.boxWidth}
+                  onChange={(e) => onChange({ boxWidth: Number(e.target.value) })}
+                  className="w-full h-1.5 rounded bg-white/20 accent-white"
+                />
               </div>
-              <input
-                type="range"
-                min="20"
-                max="100"
-                value={settings.circleDiameter}
-                onChange={(e) => onChange({ circleDiameter: Number(e.target.value) })}
-                className="w-full h-2 rounded bg-neutral-800 accent-emerald-400 cursor-pointer"
-              />
-            </div>
-          )}
+            )}
 
-          {/* RING INNER HOLE */}
-          {settings.shape === 'ring' && (
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between text-xs font-mono">
-                <span className="text-neutral-400">Inner Camera Hole Size</span>
-                <span className="text-neutral-200">{settings.ringInner}%</span>
+            {settings.shape === 'box' && (
+              <div className="flex-1 min-w-[140px] flex flex-col gap-1">
+                <div className="flex justify-between text-white/70">
+                  <span>Height</span>
+                  <span className="font-mono text-white">{settings.boxHeight}%</span>
+                </div>
+                <input
+                  type="range"
+                  min="10"
+                  max="100"
+                  value={settings.boxHeight}
+                  onChange={(e) => onChange({ boxHeight: Number(e.target.value) })}
+                  className="w-full h-1.5 rounded bg-white/20 accent-white"
+                />
               </div>
-              <input
-                type="range"
-                min="15"
-                max="80"
-                value={settings.ringInner}
-                onChange={(e) => onChange({ ringInner: Number(e.target.value) })}
-                className="w-full h-2 rounded bg-neutral-800 accent-emerald-400 cursor-pointer"
-              />
-            </div>
-          )}
+            )}
 
-          {/* BI-COLOR SPLIT CONTROLS */}
-          {settings.shape === 'bicolor' && (
-            <div className="flex flex-col gap-3">
-              <div className="flex flex-col gap-1.5">
-                <div className="flex items-center justify-between text-xs font-mono">
-                  <span className="text-neutral-400">Left / Right Split Balance</span>
-                  <span className="text-neutral-200">{settings.splitRatio} : {100 - settings.splitRatio}</span>
+            {/* Octa or Ring Diameter */}
+            {(settings.shape === 'octa' || settings.shape === 'ring') && (
+              <div className="flex-1 min-w-[140px] flex flex-col gap-1">
+                <div className="flex justify-between text-white/70">
+                  <span>Diameter</span>
+                  <span className="font-mono text-white">{settings.circleDiameter}%</span>
                 </div>
                 <input
                   type="range"
                   min="20"
-                  max="80"
-                  value={settings.splitRatio}
-                  onChange={(e) => onChange({ splitRatio: Number(e.target.value) })}
-                  className="w-full h-2 rounded bg-neutral-800 accent-amber-400 cursor-pointer"
+                  max="100"
+                  value={settings.circleDiameter}
+                  onChange={(e) => onChange({ circleDiameter: Number(e.target.value) })}
+                  className="w-full h-1.5 rounded bg-white/20 accent-white"
                 />
               </div>
+            )}
 
-              {/* Sub-controls for Left (Key) and Right (Fill) */}
-              <div className="grid grid-cols-2 gap-3 pt-1">
-                {/* Left */}
-                <div className="bg-neutral-900 p-2.5 rounded border border-neutral-800 flex flex-col gap-2">
-                  <span className="text-[11px] font-mono text-amber-400 font-bold uppercase">
-                    Left Zone (Key)
-                  </span>
-                  <div className="flex flex-col gap-1 text-[11px] font-mono">
-                    <span className="text-neutral-400">Kelvin: {settings.bicolorLeft.kelvin}K</span>
+            {/* Ring Inner Hole */}
+            {settings.shape === 'ring' && (
+              <div className="flex-1 min-w-[140px] flex flex-col gap-1">
+                <div className="flex justify-between text-white/70">
+                  <span>Inner Hole</span>
+                  <span className="font-mono text-white">{settings.ringInner}%</span>
+                </div>
+                <input
+                  type="range"
+                  min="15"
+                  max="80"
+                  value={settings.ringInner}
+                  onChange={(e) => onChange({ ringInner: Number(e.target.value) })}
+                  className="w-full h-1.5 rounded bg-white/20 accent-white"
+                />
+              </div>
+            )}
+
+            {/* Bi-Color Key / Fill Controls */}
+            {settings.shape === 'bicolor' && (
+              <div className="w-full flex flex-col gap-3">
+                <div className="flex flex-col gap-1">
+                  <div className="flex justify-between text-white/70">
+                    <span>Split Ratio (Left : Right)</span>
+                    <span className="font-mono text-white">{settings.splitRatio}% : {100 - settings.splitRatio}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="20"
+                    max="80"
+                    value={settings.splitRatio}
+                    onChange={(e) => onChange({ splitRatio: Number(e.target.value) })}
+                    className="w-full h-1.5 rounded bg-white/20 accent-white"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 pt-1">
+                  <div className="p-2.5 rounded-lg bg-black/40 flex flex-col gap-1.5">
+                    <span className="text-[11px] font-medium text-amber-400">Left Key</span>
+                    <div className="flex items-center justify-between text-[11px] text-white/60">
+                      <span>Kelvin</span>
+                      <span className="font-mono text-white">{settings.bicolorLeft.kelvin}K</span>
+                    </div>
                     <input
                       type="range"
                       min="2000"
@@ -401,42 +443,19 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                       value={settings.bicolorLeft.kelvin}
                       onChange={(e) =>
                         onChange({
-                          bicolorLeft: {
-                            ...settings.bicolorLeft,
-                            kelvin: Number(e.target.value),
-                          },
+                          bicolorLeft: { ...settings.bicolorLeft, kelvin: Number(e.target.value) },
                         })
                       }
-                      className="w-full h-1.5 rounded bg-neutral-800 accent-amber-400 cursor-pointer"
+                      className="w-full h-1 rounded bg-white/20 accent-amber-400"
                     />
                   </div>
-                  <div className="flex flex-col gap-1 text-[11px] font-mono">
-                    <span className="text-neutral-400">Brightness: {settings.bicolorLeft.brightness}%</span>
-                    <input
-                      type="range"
-                      min="10"
-                      max="100"
-                      value={settings.bicolorLeft.brightness}
-                      onChange={(e) =>
-                        onChange({
-                          bicolorLeft: {
-                            ...settings.bicolorLeft,
-                            brightness: Number(e.target.value),
-                          },
-                        })
-                      }
-                      className="w-full h-1.5 rounded bg-neutral-800 accent-amber-400 cursor-pointer"
-                    />
-                  </div>
-                </div>
 
-                {/* Right */}
-                <div className="bg-neutral-900 p-2.5 rounded border border-neutral-800 flex flex-col gap-2">
-                  <span className="text-[11px] font-mono text-sky-400 font-bold uppercase">
-                    Right Zone (Fill)
-                  </span>
-                  <div className="flex flex-col gap-1 text-[11px] font-mono">
-                    <span className="text-neutral-400">Kelvin: {settings.bicolorRight.kelvin}K</span>
+                  <div className="p-2.5 rounded-lg bg-black/40 flex flex-col gap-1.5">
+                    <span className="text-[11px] font-medium text-sky-400">Right Fill</span>
+                    <div className="flex items-center justify-between text-[11px] text-white/60">
+                      <span>Kelvin</span>
+                      <span className="font-mono text-white">{settings.bicolorRight.kelvin}K</span>
+                    </div>
                     <input
                       type="range"
                       min="2000"
@@ -445,61 +464,23 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                       value={settings.bicolorRight.kelvin}
                       onChange={(e) =>
                         onChange({
-                          bicolorRight: {
-                            ...settings.bicolorRight,
-                            kelvin: Number(e.target.value),
-                          },
+                          bicolorRight: { ...settings.bicolorRight, kelvin: Number(e.target.value) },
                         })
                       }
-                      className="w-full h-1.5 rounded bg-neutral-800 accent-sky-400 cursor-pointer"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1 text-[11px] font-mono">
-                    <span className="text-neutral-400">Brightness: {settings.bicolorRight.brightness}%</span>
-                    <input
-                      type="range"
-                      min="10"
-                      max="100"
-                      value={settings.bicolorRight.brightness}
-                      onChange={(e) =>
-                        onChange({
-                          bicolorRight: {
-                            ...settings.bicolorRight,
-                            brightness: Number(e.target.value),
-                          },
-                        })
-                      }
-                      className="w-full h-1.5 rounded bg-neutral-800 accent-sky-400 cursor-pointer"
+                      className="w-full h-1 rounded bg-white/20 accent-sky-400"
                     />
                   </div>
                 </div>
               </div>
-            </div>
-          )}
-        </div>
-      )}
+            )}
+          </div>
+        )}
+      </div>
 
-      {/* 6. DIFFUSION / FEATHERING */}
-      <div className="flex flex-col gap-2 border-t border-neutral-800 pt-5">
-        <div className="flex items-center justify-between">
-          <label className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-300">
-            Diffusion / Edge Feathering
-          </label>
-          <span className="text-xs font-mono font-bold text-neutral-400">
-            {settings.feather}% {settings.feather === 0 ? '(Hard Cut)' : settings.feather > 70 ? '(Ultra Soft Diffused)' : '(Softbox Silk)'}
-          </span>
-        </div>
-        <input
-          type="range"
-          min="0"
-          max="100"
-          value={settings.feather}
-          onChange={(e) => onChange({ feather: Number(e.target.value) })}
-          className="w-full h-2 rounded-lg bg-neutral-800 accent-neutral-300 cursor-pointer"
-        />
-        <p className="text-[11px] text-neutral-500">
-          Controls the optical falloff gradient at the edges of the softbox aperture.
-        </p>
+      {/* 5. OLED SAFETY NOTICE AT BOTTOM OF DOCK */}
+      <div className="pt-1 flex items-center justify-center gap-1.5 text-[11px] text-white/40">
+        <AlertTriangle className="w-3 h-3 text-amber-400/80 shrink-0" />
+        <span>Notice: Strictly for standard LCD/IPS monitors. Not recommended for OLED/QD-OLED displays due to risk of burn-in.</span>
       </div>
     </div>
   )

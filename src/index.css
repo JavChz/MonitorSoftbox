@@ -8,33 +8,75 @@
   }
 
   body {
-    @apply bg-neutral-950 text-neutral-100 font-sans antialiased overflow-x-hidden;
+    @apply bg-black text-neutral-100 font-sans antialiased overflow-hidden;
     margin: 0;
     padding: 0;
     user-select: none;
+    -webkit-user-select: none;
   }
 }
 
-/* Custom scrollbars for studio gear feel */
+/* Precision Matte Dark Hardware Material */
+.pro-dock {
+  background: rgba(18, 18, 20, 0.88);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    0 24px 48px -12px rgba(0, 0, 0, 0.85),
+    0 0 0 1px rgba(0, 0, 0, 0.5);
+}
+
+.pro-well {
+  background: rgba(10, 10, 12, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.pro-pill {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.65);
+  transition: all 0.12s ease;
+}
+
+.pro-pill:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+}
+
+.pro-pill-active {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+}
+
+/* Minimal Flat Preset Color Dot */
+.pro-dot {
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Custom scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0f1015;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #272833;
-  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3e4052;
+  background: rgba(255, 255, 255, 0.3);
 }
 
-/* Range input custom styling */
+/* Clean Flat Range Sliders (No bulbous glossy shine) */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
@@ -49,32 +91,31 @@ input[type="range"]:focus {
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  height: 20px;
-  width: 20px;
+  height: 18px;
+  width: 18px;
   border-radius: 9999px;
-  background: #f8fafc;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.6), 0 0 2px rgba(255, 255, 255, 0.8);
-  border: 2px solid #0f172a;
+  background: #ffffff;
+  border: 2px solid #18181b;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
   cursor: pointer;
-  transition: transform 0.1s ease, background-color 0.1s ease;
+  transition: transform 0.1s ease;
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
   transform: scale(1.15);
-  background: #ffffff;
 }
 
 input[type="range"]::-webkit-slider-thumb:active {
   transform: scale(0.95);
-  background: #38bdf8;
+  background: #e4e4e7;
 }
 
 input[type="range"]::-moz-range-thumb {
-  height: 20px;
-  width: 20px;
+  height: 18px;
+  width: 18px;
   border-radius: 9999px;
-  background: #f8fafc;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.6), 0 0 2px rgba(255, 255, 255, 0.8);
-  border: 2px solid #0f172a;
+  background: #ffffff;
+  border: 2px solid #18181b;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
   cursor: pointer;
 }

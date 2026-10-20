@@ -2,6 +2,8 @@
 
 > Transform your computer monitor into a professional, calibrated softbox key and fill light for photography, video calls, YouTube, and cinema production.
 
+![MonitorSoftbox Preview](./preview.png)
+
 Live GitHub Pages path: `https://<username>.github.io/MonitorSoftbox/`
 
 ---
