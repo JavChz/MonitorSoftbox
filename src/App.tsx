@@ -6,9 +6,10 @@ import { SettingsPanel } from './components/SettingsPanel'
 import { PresetSelector } from './components/PresetSelector'
 import { FullscreenView } from './components/FullscreenView'
 import { ShortcutsModal } from './components/ShortcutsModal'
-import { Film } from 'lucide-react'
+import { Film, AlertTriangle, X } from 'lucide-react'
 
 const STORAGE_KEY = 'monitor_softbox_settings_v1'
+const OLED_DISMISSED_KEY = 'monitor_softbox_oled_dismissed_v1'
 
 const DEFAULT_SETTINGS: SoftboxSettings = {
   mode: 'cct',
@@ -51,6 +52,13 @@ export function App() {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isBlackout, setIsBlackout] = useState(false)
   const [isHelpOpen, setIsHelpOpen] = useState(false)
+  const [isOledDismissed, setIsOledDismissed] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem(OLED_DISMISSED_KEY) === 'true'
+    } catch {
+      return false
+    }
+  })
 
   // Persist settings
   useEffect(() => {
@@ -58,6 +66,13 @@ export function App() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
     } catch (_) {}
   }, [settings])
+
+  const dismissOledBanner = () => {
+    setIsOledDismissed(true)
+    try {
+      localStorage.setItem(OLED_DISMISSED_KEY, 'true')
+    } catch (_) {}
+  }
 
   const updateSettings = useCallback((updates: Partial<SoftboxSettings>) => {
     setSettings((prev) => ({ ...prev, ...updates }))
@@ -146,7 +161,29 @@ export function App() {
         onOpenHelp={() => setIsHelpOpen(true)}
       />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-5">
+        {/* OLED Burn-in Warning Banner */}
+        {!isOledDismissed && (
+          <div className="bg-gradient-to-r from-red-950/40 via-neutral-900/80 to-amber-950/30 border border-red-500/40 rounded-xl p-3 sm:px-4 sm:py-3 flex items-center justify-between gap-3 text-xs shadow-lg animate-fadeIn">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-red-500/20 border border-red-500/40 flex items-center justify-center shrink-0">
+                <AlertTriangle className="w-4 h-4 text-red-400" />
+              </div>
+              <p className="text-neutral-300 font-mono text-[11px] sm:text-xs leading-relaxed">
+                <strong className="text-red-400 uppercase tracking-wide">OLED Safety Notice:</strong>{' '}
+                Do <strong>not</strong> use on <span className="text-red-300 underline underline-offset-2">OLED / QD-OLED</span> displays to avoid permanent burn-in (image retention). Intended strictly for standard LCD, IPS, and LED monitors.
+              </p>
+            </div>
+            <button
+              onClick={dismissOledBanner}
+              className="p-1.5 rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors shrink-0 cursor-pointer"
+              title="Dismiss warning"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
         {/* Top Grid: Live Monitor Preview & Presets */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* Left Column: Live Preview & Presets (5 cols) */}
@@ -173,15 +210,19 @@ export function App() {
         </div>
       </main>
 
-      {/* Minimal Footer */}
-      <footer className="border-t border-neutral-900 bg-neutral-950/80 px-6 py-4 text-center text-xs font-mono text-neutral-500 flex flex-col sm:flex-row items-center justify-between gap-2 max-w-7xl mx-auto w-full">
+      {/* Minimal Footer with OLED warning & shortcuts */}
+      <footer className="border-t border-neutral-900 bg-neutral-950/80 px-6 py-4 text-xs font-mono text-neutral-500 flex flex-col md:flex-row items-center justify-between gap-3 max-w-7xl mx-auto w-full">
         <div className="flex items-center gap-2">
           <Film className="w-3.5 h-3.5 text-neutral-400" />
           <span>MonitorSoftbox — Pro Cinema Lighting Instrument</span>
         </div>
-        <div className="flex items-center gap-4 text-neutral-400">
-          <span>Press <kbd className="px-1 py-0.5 rounded bg-neutral-900 text-neutral-300">F</kbd> for Fullscreen</span>
-          <span>Press <kbd className="px-1 py-0.5 rounded bg-neutral-900 text-neutral-300">Space</kbd> for Blackout</span>
+        <div className="text-[11px] text-amber-500/80 flex items-center gap-1.5">
+          <AlertTriangle className="w-3 h-3 text-amber-500" />
+          <span>Notice: Not recommended for OLED/QD-OLED displays due to risk of burn-in.</span>
+        </div>
+        <div className="flex items-center gap-4 text-neutral-400 text-[11px]">
+          <span><kbd className="px-1 py-0.5 rounded bg-neutral-900 text-neutral-300">F</kbd> Fullscreen</span>
+          <span><kbd className="px-1 py-0.5 rounded bg-neutral-900 text-neutral-300">Space</kbd> Blackout</span>
         </div>
       </footer>
 

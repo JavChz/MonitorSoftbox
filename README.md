@@ -6,6 +6,14 @@ Live GitHub Pages path: `https://<username>.github.io/MonitorSoftbox/`
 
 ---
 
+> [!CAUTION]
+> ### ⚠️ OLED / QD-OLED Burn-in Disclaimer
+> **DO NOT USE THIS APPLICATION ON OLED, QD-OLED, OR AMOLED DISPLAYS.**
+> Projecting static high-brightness shapes, rings, split-tones, or high-contrast borders for sustained durations carries a severe risk of permanent subpixel burn-in (image retention) on organic emissive panels.
+> **This tool is designed exclusively for standard LCD, LED-backlit, or IPS monitors and laptop displays.**
+
+---
+
 ## ⚡ Features
 
 - **White Balance / CCT (1,800K – 10,000K)**

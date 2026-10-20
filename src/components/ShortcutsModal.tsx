@@ -1,5 +1,5 @@
 import React from 'react'
-import { X, Keyboard, Lightbulb, Zap, Monitor } from 'lucide-react'
+import { X, Keyboard, Lightbulb, Zap, Monitor, AlertTriangle } from 'lucide-react'
 
 interface ShortcutsModalProps {
   isOpen: boolean
@@ -21,10 +21,26 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors"
+            className="p-1 rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
+        </div>
+
+        {/* OLED Burn-in Caution */}
+        <div className="flex items-start gap-3 p-3.5 rounded-xl bg-red-950/30 border border-red-500/40 text-red-200 text-xs">
+          <AlertTriangle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <span className="text-red-300 font-bold font-mono uppercase tracking-wider block">
+              ⚠️ Important OLED / QD-OLED Disclaimer
+            </span>
+            <p className="text-red-200/90 leading-relaxed">
+              <strong>Do not use this application on OLED, QD-OLED, or AMOLED displays.</strong> Displaying static, high-brightness light patterns, strip edges, or geometric shapes for prolonged durations carries a high risk of permanent <strong>screen burn-in</strong> and uneven organic subpixel wear.
+            </p>
+            <p className="text-neutral-400 pt-0.5">
+              Please use this tool exclusively on traditional <strong>LCD, LED-backlit, or IPS</strong> computer monitors and laptop screens.
+            </p>
+          </div>
         </div>
 
         {/* Pro Tips */}
