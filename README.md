@@ -4,7 +4,7 @@ Transform your computer monitor into softbox key and fill light for photography,
 
 ![MonitorSoftbox Preview](./preview.png)
 
-Live GitHub Pages path: `https://javchz.github.io/MonitorSoftbox/` (https://javchz.github.io/MonitorSoftbox/)
+Live GitHub Pages path: [MonitorSoftbox](https://javchz.github.io/MonitorSoftbox/)
 
 ---
 
